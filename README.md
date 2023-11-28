@@ -1,7 +1,12 @@
 # CDL-Project - Wildfire Detection
 
-'''Add Description'''
+So far:
+API Calls to get Data from Sensors (humidity, temperature, smoke level)
+Function to calculate distance to real wildfires and select best sensors
+Integrate Weather Data
+EDA, Data Cleaning & Analysis
 
-- "Complete_Analysis_of_Sensors" Notebook has all the code to connect to API, get relevant Data and Explore Data + Merge with Ground Truth
-- Please have a look and continue on the Steps outlines in 8.
-- Data is also saved per Sensor and on Google Drive
+Next:
+Get Granular Data (hourly)
+Feature Engineering
+Tableau Dashboard completed
