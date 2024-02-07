@@ -1,12 +1,125 @@
 # CDL-Project - Wildfire Detection
 
-So far:
-API Calls to get Data from Sensors (humidity, temperature, smoke level)
-Function to calculate distance to real wildfires and select best sensors
-Integrate Weather Data
-EDA, Data Cleaning & Analysis
+### So far:
 
-Next:
-Get Granular Data (hourly)
-Feature Engineering
-Tableau Dashboard completed
+- API Calls to get Data from Sensors (humidity, temperature, smoke level)
++ Function to calculate distance to real wildfires and select best sensors
++ Integrate Weather Data
++ EDA, Data Cleaning & Analysis
+
+
+### Next:
++ Get Granular Data (hourly)
++ Feature Engineering
++ Tableau Dashboard completed
+
+# Infrastructure Setup · Cloud Side
+
+This section walks users through setting up the controller for the edge network. Prerequisites include golang to support KubeEdge, as well as a container runtime (we will use containerd as dockershim/cri-docker are deprecated). Containerd ships with Docker ≥ 18.09 but we don't need the rest of Docker's functions, so we omit it.
+
+## Install [golang 1.22.0](https://go.dev/doc/install)
+
+```bash
+# Download latest go gzip archive (edit URL as necessary)
+wget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz
+
+# Delete existing go folder if it exists
+sudo rm -rf /usr/local/go
+
+# Untar the downloaded archive (might need to change filename)
+sudo tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz
+
+# Add go folder to PATH
+export PATH=$PATH:/usr/local/go/bin
+
+# Reload source profile
+source $HOME/.bash_profile
+source $HOME/.bashrc
+source $HOME/.profile
+
+# Run version check to test function
+go version
+```
+
+## Install [containerd 1.7.13](https://github.com/containerd/containerd/blob/main/docs/getting-started.md)
+
+```bash
+# Download latest .tar.gz
+wget https://github.com/containerd/containerd/releases/download/v1.7.13/containerd-1.7.13-linux-amd64.tar.gz
+
+# Unpack file to /usr/local
+tar Cxzvf /usr/local containerd-1.7.13-linux-amd64.tar.gz
+
+# Download the containerd.service unit file
+wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+
+# Move unit file to correct dir
+sudo mv containerd.service /usr/local/lib/systemd/system/
+
+# Reload systemd daemons
+sudo systemctl daemon-reload
+sudo systemctl enable --now containerd
+
+# Check service health
+systemctl status containerd
+```
+
+### Install [runc](https://github.com/opencontainers/runc/releases)
+
+```bash
+# Download the latest runc.<ARCH> binary 
+wget https://github.com/opencontainers/runc/releases/download/v1.1.12/runc.amd64
+
+# Install to sbin
+sudo install -m 755 runc.amd64 /usr/local/sbin/runc
+```
+
+### Install [CNI Plugins](https://github.com/containernetworking/plugins/releases)
+
+```bash
+# Download the cni-plugins-<OS>-<ARCH>-<VERSION>.tgz archive
+wget https://github.com/containernetworking/plugins/releases/download/v1.4.0/cni-plugins-linux-amd64-v1.4.0.tgz
+
+# Extract it under /opt/cni/bin
+sudo mkdir -p /opt/cni/bin
+sudo tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.4.0.tgz
+```
+
+## Install [kubeadm + kubectl + kubelet v1.26](https://v1-26.docs.kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
+
+```bash
+# Update the apt package index and install packages
+sudo apt update
+sudo apt install -y apt-transport-https ca-certificates curl
+
+# Download the public signing key for the Kubernetes package repositories.
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.26/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+# Add the appropriate Kubernetes apt repository. This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.26/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+# Update the apt package index, install kubelet, kubeadm and kubectl, and pin their version:
+
+sudo apt update
+sudo apt install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+```
+
+### Enable bash completion for kubectl (optional)
+```bash
+kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null
+
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+echo "source <(kubectl completion bash)" >> ~/.bash_profile
+echo "source <(kubectl completion bash)" >> ~/.profile
+```
+
+### Disable swap (Necessary after each reboot)
+```bash
+sudo swapoff -a && sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+```
+
+### Initialize kubeadm control plane
+```bash
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+```
