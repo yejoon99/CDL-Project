@@ -157,13 +157,12 @@ Verify that the `net.bridge.bridge-nf-call-iptables`, `net.bridge.bridge-nf-call
 ```bash
 sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables net.ipv4.ip_forward
 ```
+### Initialize kubeadm control plane
+```bash
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+```
 
 ### Install [Flannel CNI](https://github.com/flannel-io/flannel)
 ```bash
 kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
-```
-
-### Initialize kubeadm control plane
-```bash
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 ```
