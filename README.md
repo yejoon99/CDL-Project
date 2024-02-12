@@ -166,3 +166,19 @@ sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 ```bash
 kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 ```
+
+## Useful `kubectl` commands to check cluster health
+```bash
+kubectl cluster-info
+```
+This should give the IP address of the control plane; we also want to see CoreDNS info present.
+
+```bash
+kubectl get nodes
+```
+This will list all nodes in the cluster.
+
+```bash
+kubectl describe node
+```
+Lists more in depth information for each node in the cluster.
