@@ -2,7 +2,7 @@
 
 ### So far:
 
-- API Calls to get Data from Sensors (humidity, temperature, smoke level)
++ API Calls to get Data from Sensors (humidity, temperature, smoke level)
 + Function to calculate distance to real wildfires and select best sensors
 + Integrate Weather Data
 + EDA, Data Cleaning & Analysis
@@ -53,8 +53,8 @@ tar Cxzvf /usr/local containerd-1.7.13-linux-amd64.tar.gz
 # Download the containerd.service unit file
 wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
 
-# Move unit file to correct dir
-sudo mv containerd.service /usr/local/lib/systemd/system/
+# Move unit file to correct dir. Normally /usr/local/lib/systemd/system/ but on Ubuntu /lib/systemd/system/
+sudo mv containerd.service /lib/systemd/system/
 
 # Reload systemd daemons
 sudo systemctl daemon-reload
@@ -114,9 +114,53 @@ echo "source <(kubectl completion bash)" >> ~/.bash_profile
 echo "source <(kubectl completion bash)" >> ~/.profile
 ```
 
+### Verify cgroup driver is systemd
+```bash
+kubeadm config print init-defaults
+```
+
 ### Disable swap (Necessary after each reboot)
 ```bash
 sudo swapoff -a && sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+```
+
+### Forward IPv4 and config iptables for bridged traffic
+```bash
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+overlay
+br_netfilter
+EOF
+
+sudo modprobe overlay
+sudo modprobe br_netfilter
+
+# sysctl params required by setup, params persist across reboots
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward                 = 1
+EOF
+
+# Apply sysctl params without reboot
+sudo sysctl --system
+```
+
+Verify that the `br_netfilter`, `overlay` modules are loaded by running the following commands:
+
+```bash
+lsmod | grep br_netfilter
+lsmod | grep overlay
+```
+
+Verify that the `net.bridge.bridge-nf-call-iptables`, `net.bridge.bridge-nf-call-ip6tables`, and `net.ipv4.ip_forward` system variables are set to `1` in your sysctl config by running the following command:
+
+```bash
+sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables net.ipv4.ip_forward
+```
+
+### Install [Flannel CNI](https://github.com/flannel-io/flannel)
+```bash
+kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 ```
 
 ### Initialize kubeadm control plane
