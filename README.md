@@ -228,3 +228,118 @@ kubeadm reset --cleanup-tmp-dir
 rm -rf /etc/kubernetes/ /etc/cni/net.d $HOME/.kube
 ```
 Reset the cluster in preparation for reinit
+
+# Infrastructure Setup · Edge Side
+
+First step for setting up the raspberry pi's is to load a ubuntu server image on it using this [tutorial](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#1-overview).
+
+The rest of this section walks users through setting up raspberry pi's as edge nodes for the edge network. The first step is setting up the pi for network connectivity. Then, prerequisites to support KubeEdge include golang, a container runtime (we will use containerd as dockershim/cri-docker are deprecated), and mosquitto.
+
+## WIFI Connectivity
+
+To allow connectivty, the pi's MAC address needs to be added to the Devices Northwestern portal and the netplan on the pi needs to be edited.
+
+### Add MAC Address to portal
+
+To add a MAC address to the Northwestern portal, use this [portal link](device.wireless.northwestern.edu). If you don't have the MAC address for the pi recorded, when you connect the pi to a monitor and keyboard and then boot it run the following command:
+
+```bash
+ip link
+```
+
+Look for the address under wlan0 and link/ether.
+
+### Edit Netplan
+
+To edit the netplan file, find it using this command:
+
+```bash
+sudo vim /etc/netplan/50-cloud-init.yaml
+```
+
+Then edit the file to reflect his format
+
+```bash
+network:
+    version: 2
+    wifis:
+        renderer: networkd
+        wlan0:
+            dhcp4: true
+            access-points:
+                "Device-Northwestern": {}
+```
+
+Run the next command to restart the network daemon and connect to WiFi.
+
+```bash
+sudo netplan apply
+```
+
+Wait for the connection, then check the ip address.
+
+```bash
+ip a
+```
+
+You can then use that ip address for the wlan0 connection to ssh into the device.
+
+```bash
+ssh admin@{ip_address}
+```
+
+## Dependency Installation
+
+### Install [golang 1.22.0](https://go.dev/doc/install)
+
+```bash
+# Download latest go gzip archive (edit URL as necessary)
+wget  https://go.dev/dl/go1.21.7.linux-arm64.tar.gz
+
+# Delete existing go folder if it exists
+sudo rm -rf /usr/local/go
+
+# Untar the downloaded archive (might need to change filename)
+sudo tar -C /usr/local -xzf go1.21.7.linux-arm64.tar.gz
+
+# Add go folder to PATH
+export PATH=$PATH:/usr/local/go/bin
+
+# Reload source profile
+source $HOME/.bashrc
+source $HOME/.profile
+
+# Run version check to test function
+go version
+```
+
+### Install [containerd 1.7.13](https://github.com/containerd/containerd/blob/main/docs/getting-started.md)
+
+```bash
+# Download latest .tar.gz
+wget https://github.com/containerd/containerd/releases/download/v1.7.13/containerd-1.7.13-linux-arm64.tar.gz
+
+# Unpack file to /usr/local
+sudo tar Cxzvf /usr/local containerd-1.7.13-linux-arm64.tar.gz
+
+# Download the containerd.service unit file
+wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+
+# Move unit file to correct dir. Normally /usr/local/lib/systemd/system/ but on Ubuntu /lib/systemd/system/
+# You may need to create the below directory before moving the file over
+sudo mv containerd.service /lib/systemd/system/
+
+# Reload systemd daemons
+sudo systemctl daemon-reload
+sudo systemctl enable --now containerd
+
+# Check service health
+systemctl status containerd
+```
+
+### Install [mosquitto](https://mosquitto.org/download/)
+
+```bash
+sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa
+sudo apt-get update
+```
