@@ -222,6 +222,12 @@ network:
                 "Device-Northwestern": {}
 ```
 
+Run the next command to restart the network daemon and connect to WiFi.
+
+```bash
+sudo netplan apply
+```
+
 Wait for the connection, then check the ip address.
 
 ```bash
