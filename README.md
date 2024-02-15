@@ -64,6 +64,18 @@ sudo systemctl enable --now containerd
 systemctl status containerd
 ```
 
+### Configure containerd runc options
+```bash
+sudo mkdir /etc/containerd
+containerd config default | sudo tee /etc/containerd/config.toml
+
+# Edit config
+nano /etc/containerd/config.toml
+
+# Change SystemdCgroup = false to true
+SystemdCgroup = true
+```
+
 ### Install [runc](https://github.com/opencontainers/runc/releases)
 
 ```bash
@@ -119,9 +131,10 @@ echo "source <(kubectl completion bash)" >> ~/.profile
 kubeadm config print init-defaults
 ```
 
-### Disable swap (Necessary after each reboot)
+### Disable swap
 ```bash
-sudo swapoff -a && sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+sudo swapoff -a 
+sudo sed -i '/ swap / s/^/#/' /etc/fstab
 ```
 
 ### Forward IPv4 and config iptables for bridged traffic
@@ -159,12 +172,39 @@ sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables ne
 ```
 ### Initialize kubeadm control plane
 ```bash
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+sudo kubeadm init --apiserver-advertise-address 129.105.89.200 --pod-network-cidr=10.244.0.0/16
+```
+
+### Copy configs to .kube directory
+```bash
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
 ### Install [Flannel CNI](https://github.com/flannel-io/flannel)
 ```bash
 kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+```
+
+### Set up KubeEdge
+```bash
+wget https://github.com/kubeedge/kubeedge/releases/download/v1.15.2/keadm-v1.15.2-linux-amd64.tar.gz
+tar -zxvf keadm-v1.15.2-linux-amd64.tar.gz
+cp keadm-v1.15.2-linux-amd64/keadm/keadm /usr/local/bin/keadm
+
+# Add keadm to $PATH
+echo 'export PATH=$PATH:/usr/local/bin/keadm/' >> $HOME/.bash_profile
+```
+
+### Initialize services with keadm
+```bash
+keadm init --profile version=v1.15.2 --kube-config=/root/.kube/config
+```
+
+### Verify KubeEdge nodes running
+```bash
+kubectl get all -n kubeedge
 ```
 
 ## Useful `kubectl` commands to check cluster health
@@ -182,3 +222,9 @@ This will list all nodes in the cluster.
 kubectl describe node
 ```
 Lists more in depth information for each node in the cluster.
+
+```bash
+kubeadm reset --cleanup-tmp-dir 
+rm -rf /etc/kubernetes/ /etc/cni/net.d $HOME/.kube
+```
+Reset the cluster in preparation for reinit
