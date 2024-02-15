@@ -15,7 +15,9 @@
 
 # Infrastructure Setup · Cloud Side
 
-This section walks users through setting up the controller for the edge network. Prerequisites include golang to support KubeEdge, as well as a container runtime (we will use containerd as dockershim/cri-docker are deprecated). Containerd ships with Docker ≥ 18.09 but we don't need the rest of Docker's functions, so we omit it.
+First step for setting up a raspberry pi as an edge node it to load a ubuntu server image on it using this [tutorial](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#1-overview).
+
+The rest of this section walks users through setting up the controller for the edge network. Prerequisites include golang to support KubeEdge, as well as a container runtime (we will use containerd as dockershim/cri-docker are deprecated). Containerd ships with Docker ≥ 18.09 but we don't need the rest of Docker's functions, so we omit it.
 
 ## Install [golang 1.22.0](https://go.dev/doc/install)
 
