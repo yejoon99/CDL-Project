@@ -195,11 +195,14 @@ cp keadm-v1.15.2-linux-amd64/keadm/keadm /usr/local/bin/keadm
 
 # Add keadm to $PATH
 echo 'export PATH=$PATH:/usr/local/bin/keadm/' >> $HOME/.bash_profile
+
+# Untaint control plane node to allow KubeEdge to schedule onto it
+kubectl taint nodes cdl-k8s-control node-role.kubernetes.io/control-plane:NoSchedule-
 ```
 
 ### Initialize services with keadm
 ```bash
-keadm init --profile version=v1.15.2 --kube-config=/root/.kube/config
+keadm init --advertise-address=129.105.EXTERNAL.IP --profile version=v1.12.1 --kube-config=/root/.kube/config
 ```
 
 ### Verify KubeEdge nodes running
