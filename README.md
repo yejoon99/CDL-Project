@@ -345,7 +345,19 @@ systemctl status containerd
 ```bash
 sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa
 sudo apt-get update
+sudo apt-get install mosquitto
 ```
+
+### Install [runc](https://github.com/opencontainers/runc/releases)
+
+```bash
+# Download the latest runc.<ARCH> binary 
+wget https://github.com/opencontainers/runc/releases/download/v1.1.12/runc.arm64
+
+# Install to sbin
+sudo install -m 755 runc.arm64 /usr/local/sbin/runc
+```
+
 ### Set up KubeEdge
 ```bash
 sudo wget https://github.com/kubeedge/kubeedge/releases/download/v1.15.2/keadm-v1.15.2-linux-arm64.tar.gz
@@ -359,4 +371,7 @@ echo 'export PATH=$PATH:/usr/local/bin/keadm/' >> $HOME/.bash_profile
 keadm join --help
 ```
 
-
+### Connect to KubeEdge cloudcore
+```bash
+sudo keadm join --cloudcore-ipport=129.105.89.200:10000 --edgenode-name=rp1 --token=8eaedb5966908db52eafc615bec88328ea47a5b80505548d97219b126b9eeef2.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDg3MjI0MDl9.zsALsw4dA4SWuRdLgoldC6UBNwcieVjVAnfNhmPWJ78
+```
