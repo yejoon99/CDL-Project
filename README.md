@@ -346,3 +346,17 @@ systemctl status containerd
 sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa
 sudo apt-get update
 ```
+### Set up KubeEdge
+```bash
+sudo wget https://github.com/kubeedge/kubeedge/releases/download/v1.15.2/keadm-v1.15.2-linux-arm64.tar.gz
+sudo tar -zxvf keadm-v1.15.2-linux-arm64.tar.gz
+sudo cp keadm-v1.15.2-linux-arm64/keadm/keadm /usr/local/bin/keadm
+
+# Add keadm to $PATH
+echo 'export PATH=$PATH:/usr/local/bin/keadm/' >> $HOME/.bash_profile
+
+# Check that this final command runs
+keadm join --help
+```
+
+
