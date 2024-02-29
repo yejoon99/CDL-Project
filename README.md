@@ -373,5 +373,5 @@ keadm join --help
 
 ### Connect to KubeEdge cloudcore
 ```bash
-sudo keadm join --cloudcore-ipport=129.105.89.200:10000 --edgenode-name=rp1 --token=8eaedb5966908db52eafc615bec88328ea47a5b80505548d97219b126b9eeef2.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDg3MjI0MDl9.zsALsw4dA4SWuRdLgoldC6UBNwcieVjVAnfNhmPWJ78
+sudo keadm join --cloudcore-ipport=129.105.89.200:10000 --edgenode-name=<edge node name> --token=8eaedb5966908db52eafc615bec88328ea47a5b80505548d97219b126b9eeef2.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDg3MjI0MDl9.zsALsw4dA4SWuRdLgoldC6UBNwcieVjVAnfNhmPWJ78
 ```
