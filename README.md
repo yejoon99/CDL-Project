@@ -187,6 +187,14 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 ```
 
+Then manually add the following lines to the file: /run/flannel/subnet.env
+```bash
+FLANNEL_NETWORK=10.244.0.0/16
+FLANNEL_SUBNET=10.244.0.1/24
+FLANNEL_MTU=1450
+FLANNEL_IPMASQ=true
+```
+
 ### Set up KubeEdge
 ```bash
 wget https://github.com/kubeedge/kubeedge/releases/download/v1.15.2/keadm-v1.15.2-linux-amd64.tar.gz
