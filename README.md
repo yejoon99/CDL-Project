@@ -383,3 +383,242 @@ keadm join --help
 ```bash
 sudo keadm join --cloudcore-ipport=129.105.89.200:10000 --edgenode-name=<edge node name> --token=8eaedb5966908db52eafc615bec88328ea47a5b80505548d97219b126b9eeef2.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDg3MjI0MDl9.zsALsw4dA4SWuRdLgoldC6UBNwcieVjVAnfNhmPWJ78
 ```
+
+### Model Execution Pipeline
+
+## Setup
+First, ensure you have all necessary libraries installed and imported in your script or Jupyter notebook:
+
+```bash
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
+from sklearn.utils import resample
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score, accuracy_score
+from imblearn.over_sampling import RandomOverSampler
+from sklearn.preprocessing import StandardScaler
+```
+
+### Data Preprocessing
+
+## 1. Data Cleaning and Preparation
+Begin by running the preprocess_data function to clean your dataset. This function performs several key operations:
+
+1. Converts the 'date' column to datetime format and extracts the month.
+2. Creates dummy variables for each month.
+3. Removes unnecessary columns.
+4. Scales numerical features except for the target variable.
+
+```bash
+import pandas as pd
+
+data = pd.read_csv('path/to/your/dataset.csv')
+processed_data = preprocess_data(data)
+```
+
+## 2. Separate Blind Test Set
+If your data contains a 'year' column that has been scaled, you can separate out a blind test set for final evaluation.
+```bash
+blind_test_set = separate_blind_dataset(processed_data)
+```
+## 3. Balance the Dataset
+To balance your dataset, you have two options: downsampling the majority class or oversampling the minority class. Choose the method that best fits your scenario.
+
+# Downsampling Majority Class
+This method reduces the majority class to match the size of the minority class. Use the downsample_majority_class function provided.
+```bash
+balanced_data = downsample_majority_class(processed_data)
+```
+# Oversampling Minority Class
+This method increases the minority class to match the size of the majority class. Use the random_over_sampling function for this purpose. Note that you should perform this step after splitting your data into training and testing sets to avoid overfitting.
+```bash
+from sklearn.model_selection import train_test_split
+
+X = balanced_data.drop('target', axis=1)
+y = balanced_data['target']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=123)
+
+X_train_resampled, y_train_resampled = random_over_sampling(X_train, y_train)
+```
+
+### Model Training with Cross-Validation by Sensor ID
+This section explains how to train the Logistic Regression, Random Forest Classifier, and MLP Classifier models with cross-validation, grouped by sensor_id. The training process includes hyperparameter tuning using GridSearchCV and evaluation on both test and blind datasets.
+
+## Defining Parameter Grids
+First, define the parameter grids for each model. Adjust the parameter ranges based on your dataset's specifics and the models' requirements.
+```bash
+param_grids = {
+    'Logistic Regression': {
+        'param_grid': {'C': [0.1, 1, 10], 'penalty': ['l2']},
+        'train_fn': train_logistic_regression
+    },
+    'Random Forest': {
+        'param_grid': {'n_estimators': [10, 100, 200], 'max_depth': [None, 10, 20, 30]},
+        'train_fn': train_random_forest
+    },
+    'Neural Network': {
+        'param_grid': {'hidden_layer_sizes': [(50,), (100,)], 'alpha': [0.0001, 0.001, 0.01]},
+        'train_fn': train_neural_network
+    }
+}
+```
+
+## Training and Evaluation Pipeline
+Utilize the provided pipeline functions to preprocess your data, balance it, perform cross-validated training, and evaluate the models. Choose the appropriate pipeline based on your dataset balancing strategy (e.g., undersampling or SMOTE)
+
+# Undersampling Pipeline
+```bash
+# Assuming `data` is your DataFrame containing the dataset
+X_train, X_test, y_test, blind_set, best_models, cv_scores = run_pipeline_undersampling(data, param_grids)
+
+# Print Cross-Validation scores
+for model_name, scores in cv_scores.items():
+    print(f"{model_name} CV Scores:", scores)
+```
+
+# Oversampling Pipeline
+```bash
+X_train, X_test, y_test, blind_set, best_models, cv_scores = run_pipeline_smote(data, param_grids)
+
+# Print Cross-Validation scores
+for model_name, scores in cv_scores.items():
+    print(f"{model_name} CV Scores:", scores)
+```
+
+### Evaluating Models on the Test Set
+After training your models using either the undersampling or oversampling pipelines, it's crucial to assess their performance on a separate test set. This process helps to understand how well the models might perform on unseen data. The evaluation covers several key metrics, including the confusion matrix, precision, recall, F1 score, and accuracy.
+
+# Undersampling
+```bash
+# Evaluate models on the test set
+test_evaluation_results = {}
+for clf_name, model in best_models.items():
+    test_evaluation_results[clf_name] = evaluate_model(model, X_test, y_test)
+
+# Display evaluation metrics for the test set
+for clf_name, evaluation_metrics in test_evaluation_results.items():
+    print(f"Performance of {clf_name} on the Test Set:")
+    print("Confusion Matrix:\n", evaluation_metrics['confusion_matrix'])
+    print("Precision: {:.2f}".format(evaluation_metrics['precision']))
+    print("Recall: {:.2f}".format(evaluation_metrics['recall']))
+    print("F1 Score: {:.2f}".format(evaluation_metrics['f1_score']))
+    print("Accuracy: {:.2f}".format(evaluation_metrics['accuracy']))
+    print()
+```
+# Oversampling 
+```bash
+# Evaluate models on the test set
+test_evaluation_results = {}
+for clf_name, model in models_oversampling.items():
+    test_evaluation_results[clf_name] = evaluate_model(model, X_test, y_test)
+
+# Display evaluation metrics for the test set
+for clf_name, evaluation_metrics in test_evaluation_results.items():
+    print(f"Performance of {clf_name} on the Test Set:")
+    print("Confusion Matrix:\n", evaluation_metrics['confusion_matrix'])
+    print("Precision: {:.2f}".format(evaluation_metrics['precision']))
+    print("Recall: {:.2f}".format(evaluation_metrics['recall']))
+    print("F1 Score: {:.2f}".format(evaluation_metrics['f1_score']))
+    print("Accuracy: {:.2f}".format(evaluation_metrics['accuracy']))
+    print()
+```
+
+### Feature Importance Evaluation for Models
+Evaluating feature importance is an integral part of understanding the influence of each feature on the model predictions. In the case of Random Forest, this is particularly insightful as it assigns a score to each feature, indicating its importance in the decision-making process of the model.
+
+## Extracting Feature Importance from Random Forest
+The trained Random Forest model allows us to extract the importance of each feature. Here's how you can obtain and sort the feature importances.
+
+# Undersampling
+```bash
+models_undersampling  = best_models
+
+rf_model = models_undersampling['Random Forest']
+
+# Get feature names
+feature_names = X_train.columns
+
+# Get feature importances
+feature_importances = rf_model.feature_importances_
+
+# Combine feature names and importances
+features_and_importances = zip(feature_names, feature_importances)
+
+# Sorting the features by importance
+sorted_features_and_importances = sorted(features_and_importances, key=lambda x: x[1], reverse=True)
+
+# Printing the sorted features and their importances
+for feature, importance in sorted_features_and_importances:
+    print(f"{feature}: {importance}")
+```
+
+# Oversampling
+```bash
+models_oversampling = best_models
+rf_model = models_oversampling['Random Forest']
+
+feature_names = X_train.columns
+
+feature_importances = rf_model.feature_importances_
+
+features_and_importances = zip(feature_names, feature_importances)
+
+# Sorting the features by importance
+sorted_features_and_importances = sorted(features_and_importances, key=lambda x: x[1], reverse=True)
+
+# Printing the sorted features and their importances
+for feature, importance in sorted_features_and_importances:
+    print(f"{feature}: {importance}")
+```
+
+### Evaluating Models on the Blind Test Set
+Once your models have been trained and validated, the next critical step is to evaluate their performance on a blind test set. This dataset should not have been used during the training or validation phases, ensuring that the evaluation metrics reflect the model's ability to generalize to new, unseen data.
+
+# Undersampling
+```bash
+# Evaluate undersampling models on the blind test set
+blind_evaluation_results = {}
+for clf_name, model in models_undersampling.items():
+    blind_evaluation_results[clf_name] = evaluate_on_blind_set(model, blind_set)
+
+# Display evaluation metrics for the blind test set
+for clf_name, evaluation_metrics in blind_evaluation_results.items():
+    print(f"Performance of {clf_name} on the Blind Test Set:")
+    print("Confusion Matrix:\n", evaluation_metrics['confusion_matrix'])
+    print(f"Precision: {evaluation_metrics['precision']:.2f}")
+    print(f"Recall: {evaluation_metrics['recall']:.2f}")
+    print(f"F1 Score: {evaluation_metrics['f1_score']:.2f}")
+    print(f"Accuracy: {evaluation_metrics['accuracy']:.2f}")
+    print()
+```
+
+# Oversampling
+```bash
+# Evaluate undersampling models on the blind test set
+blind_evaluation_results = {}
+for clf_name, model in models_oversampling.items():
+    blind_evaluation_results[clf_name] = evaluate_on_blind_set(model, blind_set)
+
+# Display evaluation metrics for the blind test set
+for clf_name, evaluation_metrics in blind_evaluation_results.items():
+    print(f"Performance of {clf_name} on the Blind Test Set:")
+    print("Confusion Matrix:\n", evaluation_metrics['confusion_matrix'])
+    print(f"Precision: {evaluation_metrics['precision']:.2f}")
+    print(f"Recall: {evaluation_metrics['recall']:.2f}")
+    print(f"F1 Score: {evaluation_metrics['f1_score']:.2f}")
+    print(f"Accuracy: {evaluation_metrics['accuracy']:.2f}")
+    print()
+```
+
+## Interpreting the Results
+The evaluation metrics provide insights into each model's performance:
+
+Confusion Matrix: Shows the number of correct and incorrect predictions, broken down by each class.
+Precision: The ratio of correctly predicted positive observations to the total predicted positives. High precision relates to a low false positive rate.
+Recall (Sensitivity): The ratio of correctly predicted positive observations to the all observations in the actual class. High recall indicates most of the positive class is correctly recognized.
+F1 Score: The weighted average of Precision and Recall. Therefore, this score takes both false positives and false negatives into account. Useful for uneven class distribution.
+Accuracy: The ratio of correctly predicted observation to the total observations. Can be misleading if classes are imbalanced.
+Using these metrics, you can gauge the strengths and weaknesses of each model relative to your specific needs and dataset characteristics.
