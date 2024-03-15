@@ -616,9 +616,13 @@ for clf_name, evaluation_metrics in blind_evaluation_results.items():
 # Interpreting the Results
 The evaluation metrics provide insights into each model's performance:
 
-Confusion Matrix: Shows the number of correct and incorrect predictions, broken down by each class.
-Precision: The ratio of correctly predicted positive observations to the total predicted positives. High precision relates to a low false positive rate.
-Recall (Sensitivity): The ratio of correctly predicted positive observations to the all observations in the actual class. High recall indicates most of the positive class is correctly recognized.
-F1 Score: The weighted average of Precision and Recall. Therefore, this score takes both false positives and false negatives into account. Useful for uneven class distribution.
-Accuracy: The ratio of correctly predicted observation to the total observations. Can be misleading if classes are imbalanced.
+1. Confusion Matrix: Shows the number of correct and incorrect predictions, broken down by each class.
+   
+2. Precision: The ratio of correctly predicted positive observations to the total predicted positives. High precision relates to a low false positive rate.
+   
+3. Recall (Sensitivity): The ratio of correctly predicted positive observations to the all observations in the actual class. High recall indicates most of the positive class is correctly recognized.
+   
+4. F1 Score: The weighted average of Precision and Recall. Therefore, this score takes both false positives and false negatives into account. Useful for uneven class distribution.
+   
+5. Accuracy: The ratio of correctly predicted observation to the total observations. Can be misleading if classes are imbalanced.
 Using these metrics, you can gauge the strengths and weaknesses of each model relative to your specific needs and dataset characteristics.
