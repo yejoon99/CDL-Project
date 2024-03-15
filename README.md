@@ -402,7 +402,7 @@ from imblearn.over_sampling import RandomOverSampler
 from sklearn.preprocessing import StandardScaler
 ```
 
-### Data Preprocessing
+# Data Preprocessing
 
 ## 1. Data Cleaning and Preparation
 Begin by running the preprocess_data function to clean your dataset. This function performs several key operations:
@@ -427,12 +427,12 @@ blind_test_set = separate_blind_dataset(processed_data)
 ## 3. Balance the Dataset
 To balance your dataset, you have two options: downsampling the majority class or oversampling the minority class. Choose the method that best fits your scenario.
 
-# Downsampling Majority Class
+### Downsampling Majority Class
 This method reduces the majority class to match the size of the minority class. Use the downsample_majority_class function provided.
 ```bash
 balanced_data = downsample_majority_class(processed_data)
 ```
-# Oversampling Minority Class
+### Oversampling Minority Class
 This method increases the minority class to match the size of the majority class. Use the random_over_sampling function for this purpose. Note that you should perform this step after splitting your data into training and testing sets to avoid overfitting.
 ```bash
 from sklearn.model_selection import train_test_split
@@ -444,7 +444,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 X_train_resampled, y_train_resampled = random_over_sampling(X_train, y_train)
 ```
 
-### Model Training with Cross-Validation by Sensor ID
+# Model Training with Cross-Validation by Sensor ID
 This section explains how to train the Logistic Regression, Random Forest Classifier, and MLP Classifier models with cross-validation, grouped by sensor_id. The training process includes hyperparameter tuning using GridSearchCV and evaluation on both test and blind datasets.
 
 ## Defining Parameter Grids
@@ -469,7 +469,7 @@ param_grids = {
 ## Training and Evaluation Pipeline
 Utilize the provided pipeline functions to preprocess your data, balance it, perform cross-validated training, and evaluate the models. Choose the appropriate pipeline based on your dataset balancing strategy (e.g., undersampling or SMOTE)
 
-# Undersampling Pipeline
+### Undersampling Pipeline
 ```bash
 # Assuming `data` is your DataFrame containing the dataset
 X_train, X_test, y_test, blind_set, best_models, cv_scores = run_pipeline_undersampling(data, param_grids)
@@ -479,7 +479,7 @@ for model_name, scores in cv_scores.items():
     print(f"{model_name} CV Scores:", scores)
 ```
 
-# Oversampling Pipeline
+### Oversampling Pipeline
 ```bash
 X_train, X_test, y_test, blind_set, best_models, cv_scores = run_pipeline_smote(data, param_grids)
 
@@ -488,10 +488,10 @@ for model_name, scores in cv_scores.items():
     print(f"{model_name} CV Scores:", scores)
 ```
 
-### Evaluating Models on the Test Set
+# Evaluating Models on the Test Set
 After training your models using either the undersampling or oversampling pipelines, it's crucial to assess their performance on a separate test set. This process helps to understand how well the models might perform on unseen data. The evaluation covers several key metrics, including the confusion matrix, precision, recall, F1 score, and accuracy.
 
-# Undersampling
+### Undersampling
 ```bash
 # Evaluate models on the test set
 test_evaluation_results = {}
@@ -508,7 +508,7 @@ for clf_name, evaluation_metrics in test_evaluation_results.items():
     print("Accuracy: {:.2f}".format(evaluation_metrics['accuracy']))
     print()
 ```
-# Oversampling 
+### Oversampling 
 ```bash
 # Evaluate models on the test set
 test_evaluation_results = {}
@@ -526,13 +526,13 @@ for clf_name, evaluation_metrics in test_evaluation_results.items():
     print()
 ```
 
-### Feature Importance Evaluation for Models
+# Feature Importance Evaluation for Models
 Evaluating feature importance is an integral part of understanding the influence of each feature on the model predictions. In the case of Random Forest, this is particularly insightful as it assigns a score to each feature, indicating its importance in the decision-making process of the model.
 
 ## Extracting Feature Importance from Random Forest
 The trained Random Forest model allows us to extract the importance of each feature. Here's how you can obtain and sort the feature importances.
 
-# Undersampling
+### Undersampling
 ```bash
 models_undersampling  = best_models
 
@@ -555,7 +555,7 @@ for feature, importance in sorted_features_and_importances:
     print(f"{feature}: {importance}")
 ```
 
-# Oversampling
+### Oversampling
 ```bash
 models_oversampling = best_models
 rf_model = models_oversampling['Random Forest']
@@ -574,10 +574,10 @@ for feature, importance in sorted_features_and_importances:
     print(f"{feature}: {importance}")
 ```
 
-### Evaluating Models on the Blind Test Set
+# Evaluating Models on the Blind Test Set
 Once your models have been trained and validated, the next critical step is to evaluate their performance on a blind test set. This dataset should not have been used during the training or validation phases, ensuring that the evaluation metrics reflect the model's ability to generalize to new, unseen data.
 
-# Undersampling
+### Undersampling
 ```bash
 # Evaluate undersampling models on the blind test set
 blind_evaluation_results = {}
@@ -595,7 +595,7 @@ for clf_name, evaluation_metrics in blind_evaluation_results.items():
     print()
 ```
 
-# Oversampling
+### Oversampling
 ```bash
 # Evaluate undersampling models on the blind test set
 blind_evaluation_results = {}
@@ -613,7 +613,7 @@ for clf_name, evaluation_metrics in blind_evaluation_results.items():
     print()
 ```
 
-## Interpreting the Results
+# Interpreting the Results
 The evaluation metrics provide insights into each model's performance:
 
 Confusion Matrix: Shows the number of correct and incorrect predictions, broken down by each class.
