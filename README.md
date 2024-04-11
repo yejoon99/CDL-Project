@@ -379,6 +379,21 @@ echo 'export PATH=$PATH:/usr/local/bin/keadm/' >> $HOME/.bash_profile
 keadm join --help
 ```
 
+### Kill kube-proxy if it's running
+Check whether or not kube-proxy is running and kill it if it is.
+```bash
+#Install net-tools
+sudo apt install net-tools
+
+#Identify kube-proxy PID
+netstat -tulp | grep kube-proxy
+```
+
+```bash
+#kill the process
+kill -9 <kube-propxy-PID>
+```
+
 ### Connect to KubeEdge cloudcore
 ```bash
 sudo keadm join --cloudcore-ipport=129.105.89.200:10000 --edgenode-name=<edge node name> --token=8eaedb5966908db52eafc615bec88328ea47a5b80505548d97219b126b9eeef2.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDg3MjI0MDl9.zsALsw4dA4SWuRdLgoldC6UBNwcieVjVAnfNhmPWJ78
