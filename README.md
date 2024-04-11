@@ -396,10 +396,10 @@ kill -9 <kube-propxy-PID>
 
 ### Connect to KubeEdge cloudcore
 ```bash
-sudo keadm join --cloudcore-ipport=129.105.89.200:10000 --edgenode-name=<edge node name> --token=8eaedb5966908db52eafc615bec88328ea47a5b80505548d97219b126b9eeef2.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDg3MjI0MDl9.zsALsw4dA4SWuRdLgoldC6UBNwcieVjVAnfNhmPWJ78
+sudo keadm join --cloudcore-ipport=129.105.89.200:10000 --edgenode-name=<edge node name> --token=9264837828f5d6987b52a8678d4318756bd1ca482528000b5769d2c261a6a0f8.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTI5NDY1ODB9.a0QH9Q_VdSn-q50KE8a5EFUNOCuCv7xES5mYytDuLkU
 ```
 
-### Model Execution Pipeline
+# Model Execution Pipeline
 
 ## Setup
 First, ensure you have all necessary libraries installed and imported in your script or Jupyter notebook:
