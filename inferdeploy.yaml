@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Pod
+metadata:
+  name: infer
+  labels:
+    app: infer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: infer
+  template:
+    metadata:
+      labels:
+        app: infer
+    spec:
+      containers:
+      - name: chloelee602
+        image: dockerimage
+        ports:
+        - containerPort: 80
+          hostPort: 80
