@@ -398,6 +398,38 @@ kill -9 <kube-propxy-PID>
 ```bash
 sudo keadm join --cloudcore-ipport=129.105.89.200:10000 --edgenode-name=<edge node name> --token=9264837828f5d6987b52a8678d4318756bd1ca482528000b5769d2c261a6a0f8.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTI5NDY1ODB9.a0QH9Q_VdSn-q50KE8a5EFUNOCuCv7xES5mYytDuLkU
 ```
+# Deploy ML
+
+## Run Docker
+
+### First Test: run Docker on local Machine
+```bash
+docker build -t image_rpi .
+docker run image_rpi
+```
+Docker Image is uploaded on Docker Hub under the name ""
+
+### Second Test: run python script on Raspberry Pi
+copy from local folder onto R-Pi:
+```bash
+scp -r docker-files admin@10.106.11.115:/home/admin
+```
+on R-Pi:
+Then on r-pi:
+
+```bash
+# Cd in docker-files
+# Create virtual environment:
+python3 -m venv venv_name
+source venv_test/bin/activate
+
+pip install -r requirements.txt
+python3 script.py
+```
+
+### Third Test: run python script in Container on Raspberry Pi
+
+## Stream Data via Fast API
 
 # Model Execution Pipeline
 
