@@ -427,6 +427,21 @@ pip install -r requirements.txt
 python3 script.py
 ```
 
+### Push to docker hub:
+```bash
+docker tag <image_id> <username>/<repository_name>:<tag>
+docker login
+docker push <username>/<repository_name>:<tag>
+```
+
+Our Image:
+Repository name: cdl_kubeedge_wildfire
+Tag: V1
+```bash
+docker pull <username>/<repository_name>:<tag>
+docker run <username>/<repository_name>:<tag>
+```
+
 ### Third Test: run python script in Container on Raspberry Pi
 
 ## Stream Data via Fast API
