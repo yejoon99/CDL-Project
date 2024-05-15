@@ -377,7 +377,8 @@ sudo install -m 755 runc.arm64 /usr/local/sbin/runc
 
 ### Edit Flannel Config
 ```bash
-vim /run/flannel/subnet.env
+sudo touch /run/flannel/subnet.env
+sudo vim /run/flannel/subnet.env
 ```
 Add the following lines to the file above.
 ```bash
