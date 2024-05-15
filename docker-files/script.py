@@ -3,10 +3,11 @@ import pandas as pd
 import pickle
 import time
 import warnings
+import json
+import requests
 
 # Ignore all warnings
 warnings.filterwarnings("ignore")
-
 
 # Function to load the pickled model
 def load_model(filename):
@@ -14,8 +15,13 @@ def load_model(filename):
         model = pickle.load(file)
     return model
 
+# Function to post JSON data to FastAPI
+def post_to_fastapi(json_data, url):
+    response = requests.post(url, json=json_data)
+    return response
+
 # Function to continuously process data row by row, excluding the target column
-def process_data_row_by_row(model, directory):
+def process_data_row_by_row(model, directory, fastapi_url):
     # List all CSV files that start with "data_"
     data_files = [os.path.join(directory, file) for file in os.listdir(directory) if file.startswith('data_') and file.endswith('.csv')]
     while True:
@@ -31,8 +37,19 @@ def process_data_row_by_row(model, directory):
                 for index, row in data.iterrows():
                     # Process each row with the model
                     prediction = model.predict([row])
-                    # Print or handle the prediction
-                    print(f"Prediction for {data_filename}:", prediction)
+                    
+                    # Create a JSON object for the prediction
+                    result = {
+                        "key": prediction.tolist()  # Assuming the endpoint expects the key 'key'
+                    }
+                    
+                    # Post to FastAPI
+                    response = post_to_fastapi(result, fastapi_url + "/inference/")
+                    
+                    # Print response from the FastAPI server
+                    print(f"Prediction for {data_filename} at row {index}:", prediction)
+                    print("Response from FastAPI:", response.status_code, response.text)
+                    
                     # Sleep for 3 seconds before processing the next row
                     time.sleep(0.5)
                 print(f"Reached the end of the file {data_filename}, moving to the next file...")
@@ -46,4 +63,5 @@ def process_data_row_by_row(model, directory):
 if __name__ == "__main__":
     model = load_model('final_nn_model.pkl')
     directory = os.getcwd()  # Set the directory to the current working directory
-    process_data_row_by_row(model, directory)
+    fastapi_url = 'http://localhost:8000'  # Base URL of your FastAPI endpoint
+    process_data_row_by_row(model, directory, fastapi_url)
