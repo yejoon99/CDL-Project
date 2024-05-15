@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myapp
+  name: fastapi
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: myapp
+      app: fastapi
   template:
     metadata:
       labels:
-        app: myapp
+        app: fastapi
     spec:
       containers:
-      - name: myapp
+      - name: fastapi
         image: chloelee602/cdl_kubeedge_wildfire:V2
         ports:
         - containerPort: 8001
