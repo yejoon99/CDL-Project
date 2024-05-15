@@ -348,12 +348,21 @@ sudo systemctl enable --now containerd
 systemctl status containerd
 ```
 
-### Install [mosquitto](https://mosquitto.org/download/)
+### Install [mosquitto](https://mosquitto.org/documentation/using-the-snap/)
 
 ```bash
-sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa
-sudo apt-get update
-sudo apt-get install mosquitto
+snap install mosquitto
+```
+
+### Install [CNI Plugins](https://github.com/containernetworking/plugins/releases)
+
+```bash
+# Download the cni-plugins-<OS>-<ARCH>-<VERSION>.tgz archive
+wget https://github.com/containernetworking/plugins/releases/download/v1.4.0/cni-plugins-linux-amd64-v1.4.0.tgz
+
+# Extract it under /opt/cni/bin
+sudo mkdir -p /opt/cni/bin
+sudo tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.4.0.tgz
 ```
 
 ### Install [runc](https://github.com/opencontainers/runc/releases)
@@ -364,6 +373,18 @@ wget https://github.com/opencontainers/runc/releases/download/v1.1.12/runc.arm64
 
 # Install to sbin
 sudo install -m 755 runc.arm64 /usr/local/sbin/runc
+```
+
+### Edit Flannel Config
+```bash
+vim /run/flannel/subnet.env
+```
+Add the following lines to the file above.
+```bash
+FLANNEL_NETWORK=10.244.0.0/16
+FLANNEL_SUBNET=10.244.0.1/24
+FLANNEL_MTU=1450
+FLANNEL_IPMASQ=true
 ```
 
 ### Set up KubeEdge
