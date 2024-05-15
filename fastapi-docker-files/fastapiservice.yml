@@ -3,10 +3,12 @@ kind: Service
 metadata:
   name: fastapi-service
 spec:
-  type: NodePort
   selector:
     app: fastapi
   ports:
-    - port: 8001
+    - protocol: TCP
+      port: 8001
       targetPort: 8001
-      nodePort: 30001
+  type: LoadBalancer
+  externalIPs:
+  - 10.106.19.139
