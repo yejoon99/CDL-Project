@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: myapp
-        image: chloelee602/cdl_kubeedge_wildfire Tag: V2
+        image: chloelee602/cdl_kubeedge_wildfire:V2
         ports:
         - containerPort: 8001
