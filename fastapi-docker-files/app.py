@@ -7,7 +7,7 @@ from typing import Dict
 app = FastAPI()
 
 # Logs directory and file setup
-logs_dir = "logs"
+logs_dir = "/tmp"
 os.makedirs(logs_dir, exist_ok=True)
 log_file = os.path.join(logs_dir, "inference_logs.txt")
 
