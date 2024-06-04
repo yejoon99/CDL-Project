@@ -18,7 +18,7 @@ RUN mkdir /app/logs && chmod -R 777 /app/logs
 COPY . .
 
 # Expose the application's port
-EXPOSE 8000
+EXPOSE 8001
 
 # Command to run the FastAPI application using Uvicorn
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8001"]
