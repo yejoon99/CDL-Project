@@ -63,5 +63,5 @@ def process_data_row_by_row(model, directory, fastapi_url):
 if __name__ == "__main__":
     model = load_model('final_nn_model.pkl')
     directory = os.getcwd()  # Set the directory to the current working directory
-    fastapi_url = 'http://localhost:8000'  # Base URL of your FastAPI endpoint
+    fastapi_url = 'http://fastapi-service.default.svc.cluster.local:8001'  # Base URL of your FastAPI endpoint
     process_data_row_by_row(model, directory, fastapi_url)
