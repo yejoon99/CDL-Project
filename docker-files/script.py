@@ -44,7 +44,8 @@ def process_data_row_by_row(model, directory, fastapi_url):
                     }
                     
                     # Post to FastAPI
-                    response = post_to_fastapi(result, fastapi_url + "/inference/")
+                    # response = post_to_fastapi(result, fastapi_url + "/inference/")
+                    response = post_to_fastapi(result, fastapi_url)
                     
                     # Print response from the FastAPI server
                     print(f"Prediction for {data_filename} at row {index}:", prediction)
