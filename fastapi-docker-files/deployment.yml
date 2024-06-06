@@ -12,10 +12,9 @@ spec:
       labels:
         app: fastapi
     spec:
+      nodeName: cdl-k8s-control
       containers:
       - name: fastapi
         image: chloelee602/cdl_kubeedge_wildfire:V2
         ports:
         - containerPort: 8001
-      nodeSelector:
-        kubernetes.io/hostname: cdl-k8s-control
