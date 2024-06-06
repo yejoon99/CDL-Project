@@ -5,9 +5,9 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copy the requirements.txt file into the container at /app
-COPY requirements.txt ./
-COPY data_1.csv ./
-COPY final_nn_model.pkl ./
+COPY requirements.txt .
+COPY data_1.csv .
+COPY final_nn_model.pkl .
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
