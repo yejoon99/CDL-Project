@@ -44,8 +44,8 @@ def process_data_row_by_row(model, directory, fastapi_url):
                     }
                     
                     # Post to FastAPI
-                    # response = post_to_fastapi(result, fastapi_url + "/inference/")
-                    response = post_to_fastapi(result, fastapi_url)
+                    response = post_to_fastapi(result, fastapi_url + "/inference/")
+
                     
                     # Print response from the FastAPI server
                     print(f"Prediction for {data_filename} at row {index}:", prediction)
@@ -64,5 +64,5 @@ def process_data_row_by_row(model, directory, fastapi_url):
 if __name__ == "__main__":
     model = load_model('final_nn_model.pkl')
     directory = os.getcwd()  # Set the directory to the current working directory
-    fastapi_url = 'https://webhook.site/3678e444-3202-49de-a375-33b2ebb7967d'  # Base URL of your FastAPI endpoint
+    fastapi_url = 'http://fastapi-service.default.svc.cluster.local:8001'  # Base URL of your FastAPI endpoint
     process_data_row_by_row(model, directory, fastapi_url)
