@@ -17,3 +17,5 @@ spec:
         image: chloelee602/cdl_kubeedge_wildfire:V2
         ports:
         - containerPort: 8001
+      nodeSelector:
+        hostname: cdl-k8s-control
