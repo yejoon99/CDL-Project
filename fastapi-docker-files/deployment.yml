@@ -18,4 +18,4 @@ spec:
         ports:
         - containerPort: 8001
       nodeSelector:
-        hostname: cdl-k8s-control
+        kubernetes.io/hostname: cdl-k8s-control
