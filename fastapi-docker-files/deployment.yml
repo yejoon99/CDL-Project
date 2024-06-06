@@ -15,6 +15,6 @@ spec:
       nodeName: cdl-k8s-control
       containers:
       - name: fastapi
-        image: chloelee602/cdl_kubeedge_wildfire:fastapi-app
+        image: kyee33/cdl_kubeedge_wildfire:fastapi-app
         ports:
         - containerPort: 8001
