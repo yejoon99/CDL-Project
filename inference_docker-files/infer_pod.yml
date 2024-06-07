@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: inference
+spec:
+  containers:
+  - name: inference
+    image: docker.io/kyee33/cdl-kubeedge-wildfire:infer-no-command
+  nodeSelector:
+    type: rpi
